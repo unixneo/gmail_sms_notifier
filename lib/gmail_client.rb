@@ -27,13 +27,10 @@ class GmailClient
     result = @service.list_user_messages('me', q: query, max_results: 5)
     return [] unless result.messages
 
-    puts "[GmailClient] Found #{result.messages.size} matching message(s)"
-
     result.messages.map do |msg_meta|
      msg = @service.get_user_message('me', msg_meta.id)
      headers_raw = msg.payload.headers || []
      headers = headers_raw.map { |h| [h.name, h.value] }.to_h
-     puts "[GmailClient] Processing message: #{msg.id}, From: #{headers['From']}, Subject: #{headers['Subject']}"
       {
         id: msg.id,
         from: headers['From'],
