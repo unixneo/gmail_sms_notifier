@@ -12,8 +12,7 @@ api_key                = config['OPENPHONE_API']
 from_number            = config['OPENPHONE_PHONE_NUMBER_ALERTS']
 to_number              = config['OPENPHONE_PHONE_NUMBER']
 gmail_credentials_path = config['GMAIL_CREDENTIALS_PATH'] || '/etc/rails-env/gmail-credentials.json'
-gmail_address = config['GMAIL_ADDRESS'] || raise("Missing GMAIL_ADDRESS in config")
-client = GmailClient.new(credentials_path: gmail_credentials_path, gmail_address: gmail_address)
+gmail_address          = config['GMAIL_ADDRESS'] || raise("Missing GMAIL_ADDRESS in config")
 
 # Handle GMAIL_SENDER_KEYWORDS
 raw_keywords = config.fetch('GMAIL_SENDER_KEYWORDS', '')
@@ -24,7 +23,7 @@ else
 end
 
 # Initialize Gmail client
-client = GmailClient.new(credentials_path: gmail_credentials_path)
+client = GmailClient.new(credentials_path: gmail_credentials_path, gmail_address: gmail_address)
 
 # Gmail search query (limit to past 8 hours)
 query = 'is:unread newer_than:8h'
