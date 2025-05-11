@@ -1,4 +1,4 @@
-### ✅ Final `README.md` (with Gemfile & Bundler Instructions)
+### ✅ Final `README.md` (Updated with Labeling, Star, Logging, and Filtering)
 
 # gmail_sms_notifier
 
@@ -12,7 +12,11 @@ A lightweight Ruby tool that monitors your Gmail account and sends an SMS via Op
 - Filters by sender domains (e.g., `state.gov`, `ssa.gov`)
 - Sends SMS alerts using the OpenPhone API
 - Designed for crontab use — runs silently in the background
-- Marks processed messages as read to avoid duplicate alerts
+- Marks processed messages as read ✅
+- Applies the Gmail label `"SMS Sent"` to matched messages ✅
+- Adds a Gmail ⭐️ star to messages that triggered alerts ✅
+- Logs all operations with timezone-aware timestamps (Thailand local time) ✅
+- Filters out system noise (e.g., Gmail delivery failures) using Gmail search syntax ✅
 - Reads config from a YAML file (`.config.yml`)
 
 ---
@@ -24,12 +28,13 @@ A lightweight Ruby tool that monitors your Gmail account and sends an SMS via Op
 - OpenPhone API access
 - Gmail API enabled in Google Cloud
 - A Google Workspace service account with **domain-wide delegation**
+- The Gmail label `"SMS Sent"` must be manually created once in the UI
 
 ---
 
 ## 📦 Installation
 
-1. **Clone this repo** (or place it in `/opt/gmail_sms_notifier`)
+1. **Clone this repo** (e.g., `/opt/gmail_sms_notifier`)
 
 2. **Install dependencies using Bundler**:
 
@@ -38,15 +43,17 @@ cd /opt/gmail_sms_notifier
 bundle install
 ````
 
-This requires a `Gemfile` in the same directory (included below).
-
-3. **Create log directory**:
+3. **Create a log directory**:
 
 ```bash
 mkdir -p ./log
 ```
 
-4. **Verify `.config.yml` exists at** `/etc/rails-env/.config.yml`
+4. **Ensure config file exists at**:
+
+```bash
+/etc/rails-env/.config.yml
+```
 
 ---
 
@@ -59,7 +66,7 @@ OPENPHONE_PHONE_NUMBER: "+15550002222"
 
 GMAIL_CREDENTIALS_PATH: "/etc/rails-env/gmail-credentials.json"
 GMAIL_SENDER_KEYWORDS: "state.gov,ssa.gov"
-GMAIL_ADDRESS: "your_email_addr"
+GMAIL_ADDRESS: "your_email@yourdomain.com"
 ```
 
 ---
@@ -100,7 +107,7 @@ Make it executable:
 chmod +x /usr/local/bin/gmail_sms_check.sh
 ```
 
-Then add this to `crontab`:
+Add to crontab (every 15 minutes):
 
 ```cron
 */15 * * * * /usr/local/bin/gmail_sms_check.sh
@@ -112,15 +119,30 @@ Then add this to `crontab`:
 
 * Enable the Gmail API in Google Cloud Console
 * Set up a service account with **domain-wide delegation**
-* Authorize the following scope in your Workspace Admin Console:
+* Authorize the following scopes in your Workspace Admin Console:
 
   ```
-  https://www.googleapis.com/auth/gmail.readonly
+  https://www.googleapis.com/auth/gmail.modify
+  https://www.googleapis.com/auth/gmail.labels
   ```
+
+---
+
+## 🏷️ Gmail Label Setup
+
+You must manually create the label `"SMS Sent"` in the Gmail UI once:
+
+1. In Gmail, scroll left sidebar down and click **More > Create new label**
+2. Name it exactly: **SMS Sent**
+3. Click **Create**
+
+This label will be applied by the script to messages that trigger alerts.
 
 ---
 
 ## 🪪 License
 
 MIT
+
+```
 
