@@ -68,7 +68,7 @@ messages.each do |msg|
     # ✅ Mark the message as read and label it "SMS Sent"
     modify_request = Google::Apis::GmailV1::ModifyMessageRequest.new(
       remove_label_ids: ['UNREAD'],
-      add_label_ids: [sms_sent_label_id]
+      add_label_ids: [sms_sent_label_id, 'STARRED']
     )
     gmail_service.modify_message('me', msg[:id], modify_request)
 
