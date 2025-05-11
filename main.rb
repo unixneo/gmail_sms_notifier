@@ -12,6 +12,8 @@ api_key                = config['OPENPHONE_API']
 from_number            = config['OPENPHONE_PHONE_NUMBER_ALERTS']
 to_number              = config['OPENPHONE_PHONE_NUMBER']
 gmail_credentials_path = config['GMAIL_CREDENTIALS_PATH'] || '/etc/rails-env/gmail-credentials.json'
+gmail_address = config['GMAIL_ADDRESS'] || raise("Missing GMAIL_ADDRESS in config")
+client = GmailClient.new(credentials_path: gmail_credentials_path, gmail_address: gmail_address)
 
 # Handle GMAIL_SENDER_KEYWORDS
 raw_keywords = config.fetch('GMAIL_SENDER_KEYWORDS', '')
