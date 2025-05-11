@@ -31,31 +31,33 @@ messages = client.fetch_matching_messages(query: query)
 
 messages.each do |msg|
   sender = msg[:from]&.downcase || 'unknown'
-  next unless sender_keywords_array.any? { |keyword| sender.include?(keyword) }
 
-  snippet = msg[:snippet].to_s[0..100]
-  subject = msg[:subject] || 'No Subject'
+  if sender_keywords_array.any? { |keyword| sender.include?(keyword) }
+    snippet = msg[:snippet].to_s[0..100]
+    subject = msg[:subject] || 'No Subject'
 
-  sms_text = "Email from #{sender}: #{subject} - #{snippet}"
+    sms_text = "Email from #{sender}: #{subject} - #{snippet}"
 
-  payload = {
-    from: from_number,
-    to: [to_number],
-    content: sms_text
-  }
+    payload = {
+      from: from_number,
+      to: [to_number],
+      content: sms_text
+    }
 
-  timestamp = Time.now.utc.strftime('%Y-%m-%d %H:%M:%S %z')
-  puts "[#{timestamp}] Sending SMS: #{sms_text}"
+    timestamp = Time.now.utc.strftime('%Y-%m-%d %H:%M:%S %z')
+    puts "[#{timestamp}] Sending SMS: #{sms_text}"
 
-  response = HTTParty.post(
-    "https://api.openphone.com/v1/messages",
-    headers: {
-      "Authorization" => api_key,
-      "Content-Type" => "application/json"
-    },
-    body: payload.to_json
-  )
+    response = HTTParty.post(
+      "https://api.openphone.com/v1/messages",
+      headers: {
+        "Authorization" => api_key,
+        "Content-Type" => "application/json"
+      },
+      body: payload.to_json
+    )
 
-  puts "[#{timestamp}] SMS sent: HTTP #{response.code}"
+    puts "[#{timestamp}] SMS sent: HTTP #{response.code}"
+  else
+    puts "[GmailClient] Skipped: #{sender} — no keyword match"
+  end
 end
-
