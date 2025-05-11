@@ -1,22 +1,24 @@
 require 'google/apis/gmail_v1'
 require 'googleauth'
+require 'yaml'
 
 class GmailClient
   APPLICATION_NAME = 'Gmail SMS Notifier'
   SCOPE = Google::Apis::GmailV1::AUTH_GMAIL_READONLY
+  CONFIG_PATH = '/etc/rails-env/.config.yml'
 
   def initialize(credentials_path:)
-    # Load service account credentials from JSON file
+    config = YAML.load_file(CONFIG_PATH)
+    impersonated_email = config['GMAIL_ADDRESS'] || raise("Missing 'GMAIL_ADDRESS' in #{CONFIG_PATH}")
+
     authorizer = Google::Auth::ServiceAccountCredentials.make_creds(
       json_key_io: File.open(credentials_path),
       scope: SCOPE
     )
 
-    # Domain-wide delegation: impersonate a Workspace user
-    authorizer.sub = 'tim@unix.com'
+    authorizer.sub = impersonated_email
     authorizer.fetch_access_token!
 
-    # Set up Gmail service
     @service = Google::Apis::GmailV1::GmailService.new
     @service.authorization = authorizer
   end
@@ -27,7 +29,7 @@ class GmailClient
 
     result.messages.map do |msg_meta|
       msg = @service.get_user_message('me', msg_meta.id)
-      headers = msg.payload.headers.map { |h| [h.name, h.value] }.to_h
+      headers = msg.payload.headers.to_h { |h| [h.name, h.value] }
       {
         id: msg.id,
         from: headers['From'],
@@ -37,4 +39,5 @@ class GmailClient
     end
   end
 end
+
 
