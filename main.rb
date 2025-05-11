@@ -2,6 +2,7 @@ require_relative './lib/gmail_client'
 require 'yaml'
 require 'httparty'
 require 'time'
+require 'google/apis/gmail_v1'
 
 # Load configuration
 config_path = '/etc/rails-env/.config.yml'
@@ -57,6 +58,12 @@ messages.each do |msg|
     )
 
     puts "[#{timestamp}] SMS sent: HTTP #{response.code}"
+
+    # ✅ Mark the message as read
+    client_service = client.instance_variable_get(:@service)
+    modify_request = Google::Apis::GmailV1::ModifyMessageRequest.new(remove_label_ids: ['UNREAD'])
+    client_service.modify_message('me', msg[:id], modify_request)
+
   else
     puts "[GmailClient] Skipped: #{sender} — no keyword match"
   end
