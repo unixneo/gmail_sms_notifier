@@ -59,6 +59,7 @@ OPENPHONE_PHONE_NUMBER: "+15550002222"
 
 GMAIL_CREDENTIALS_PATH: "/etc/rails-env/gmail-credentials.json"
 GMAIL_SENDER_KEYWORDS: "state.gov,ssa.gov"
+GMAIL_ADDRESS: "your_email_addr"
 ```
 
 ---
