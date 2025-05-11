@@ -19,7 +19,7 @@ class GmailClient
   end
 
   def fetch_matching_messages(query:)
-    timestamp = -> { Time.now.utc.strftime('%Y-%m-%d %H:%M:%S %z') }
+    timestamp = -> { Time.now.getlocal('+07:00').strftime('%Y-%m-%d %H:%M:%S %z') }
 
     puts "[#{timestamp.call}] [GmailClient] Searching for messages matching: #{query}"
     result = @service.list_user_messages('me', q: query, max_results: 5)
