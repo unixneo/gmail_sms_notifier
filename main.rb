@@ -46,7 +46,7 @@ messages.each do |msg|
       content: sms_text
     }
 
-    timestamp = Time.now.utc.strftime('%Y-%m-%d %H:%M:%S %z')
+    timestamp = Time.now.getlocal('+07:00').strftime('%Y-%m-%d %H:%M:%S %z')
     puts "[#{timestamp}] Sending SMS: #{sms_text}"
 
     response = HTTParty.post(
@@ -66,6 +66,6 @@ messages.each do |msg|
     client_service.modify_message('me', msg[:id], modify_request)
 
   else
-    puts "[GmailClient] Skipped: #{sender} — no keyword match"
+    puts "[#{Time.now.getlocal('+07:00').strftime('%Y-%m-%d %H:%M:%S %z')}] [GmailClient] Skipped: #{sender} — no keyword match"
   end
 end
