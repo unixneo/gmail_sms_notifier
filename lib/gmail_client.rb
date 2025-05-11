@@ -1,22 +1,17 @@
 require 'google/apis/gmail_v1'
 require 'googleauth'
-require 'yaml'
 
 class GmailClient
   APPLICATION_NAME = 'Gmail SMS Notifier'
   SCOPE = Google::Apis::GmailV1::AUTH_GMAIL_READONLY
-  CONFIG_PATH = '/etc/rails-env/.config.yml'
 
-  def initialize(credentials_path:)
-    config = YAML.load_file(CONFIG_PATH)
-    impersonated_email = config['GMAIL_ADDRESS'] || raise("Missing 'GMAIL_ADDRESS' in #{CONFIG_PATH}")
-
+  def initialize(credentials_path:, gmail_address:)
     authorizer = Google::Auth::ServiceAccountCredentials.make_creds(
       json_key_io: File.open(credentials_path),
       scope: SCOPE
     )
 
-    authorizer.sub = impersonated_email
+    authorizer.sub = gmail_address
     authorizer.fetch_access_token!
 
     @service = Google::Apis::GmailV1::GmailService.new
@@ -24,13 +19,17 @@ class GmailClient
   end
 
   def fetch_matching_messages(query:)
+    puts "[GmailClient] Searching for messages matching: #{query}"
     result = @service.list_user_messages('me', q: query, max_results: 5)
     return [] unless result.messages
 
+    puts "[GmailClient] Found #{result.messages.size} matching message(s)"
+
     result.messages.map do |msg_meta|
-     msg = @service.get_user_message('me', msg_meta.id)
-     headers_raw = msg.payload.headers || []
-     headers = headers_raw.map { |h| [h.name, h.value] }.to_h
+      msg = @service.get_user_message('me', msg_meta.id)
+      headers_raw = msg.payload.headers || []
+      headers = headers_raw.map { |h| [h.name, h.value] }.to_h
+      puts "[GmailClient] Processing message: #{msg.id}, From: #{headers['From']}, Subject: #{headers['Subject']}"
       {
         id: msg.id,
         from: headers['From'],
@@ -38,7 +37,5 @@ class GmailClient
         snippet: msg.snippet
       }
     end
-   end
+  end
 end
-
-
