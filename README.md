@@ -144,5 +144,3 @@ This label will be applied by the script to messages that trigger alerts.
 
 MIT
 
-```
-
