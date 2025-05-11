@@ -28,8 +28,9 @@ class GmailClient
     return [] unless result.messages
 
     result.messages.map do |msg_meta|
-      msg = @service.get_user_message('me', msg_meta.id)
-      hheaders = msg.payload.headers.map { |h| [h.name, h.value] }.to_h
+     msg = @service.get_user_message('me', msg_meta.id)
+     headers_raw = msg.payload.headers || []
+     headers = headers_raw.map { |h| [h.name, h.value] }.to_h
       {
         id: msg.id,
         from: headers['From'],
@@ -37,7 +38,7 @@ class GmailClient
         snippet: msg.snippet
       }
     end
-  end
+   end
 end
 
 
