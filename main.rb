@@ -23,8 +23,8 @@ end
 # Initialize Gmail client
 client = GmailClient.new(credentials_path: gmail_credentials_path)
 
-# Gmail search query (limit to past 48 hours)
-query = 'is:unread newer_than:2d'
+# Gmail search query (limit to past 8 hours)
+query = 'is:unread newer_than:8h'
 
 # Fetch matching emails
 messages = client.fetch_matching_messages(query: query)
