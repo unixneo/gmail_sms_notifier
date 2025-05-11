@@ -29,7 +29,7 @@ class GmailClient
 
     result.messages.map do |msg_meta|
       msg = @service.get_user_message('me', msg_meta.id)
-      headers = msg.payload.headers.to_h { |h| [h.name, h.value] }
+      hheaders = msg.payload.headers.map { |h| [h.name, h.value] }.to_h
       {
         id: msg.id,
         from: headers['From'],
