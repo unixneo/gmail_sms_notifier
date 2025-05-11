@@ -19,17 +19,19 @@ class GmailClient
   end
 
   def fetch_matching_messages(query:)
-    puts "[GmailClient] Searching for messages matching: #{query}"
+    timestamp = -> { Time.now.utc.strftime('%Y-%m-%d %H:%M:%S %z') }
+
+    puts "[#{timestamp.call}] [GmailClient] Searching for messages matching: #{query}"
     result = @service.list_user_messages('me', q: query, max_results: 5)
     return [] unless result.messages
 
-    puts "[GmailClient] Found #{result.messages.size} matching message(s)"
+    puts "[#{timestamp.call}] [GmailClient] Found #{result.messages.size} matching message(s)"
 
     result.messages.map do |msg_meta|
       msg = @service.get_user_message('me', msg_meta.id)
       headers_raw = msg.payload.headers || []
       headers = headers_raw.map { |h| [h.name, h.value] }.to_h
-      puts "[GmailClient] Processing message: #{msg.id}, From: #{headers['From']}, Subject: #{headers['Subject']}"
+      puts "[#{timestamp.call}] [GmailClient] Processing message: #{msg.id}, From: #{headers['From']}, Subject: #{headers['Subject']}"
       {
         id: msg.id,
         from: headers['From'],
