@@ -31,7 +31,8 @@ sms_sent_label = gmail_service.list_user_labels('me').labels.find { |l| l.name =
 sms_sent_label_id = sms_sent_label&.id || raise("Label 'SMS Sent' not found in Gmail. Please create it manually.")
 
 # Gmail search query (limit to past 8 hours)
-query = 'is:unread newer_than:8h -from:mailer-daemon@googlemail.com (label:inbox OR label:updates)'
+#query = 'is:unread newer_than:8h -from:mailer-daemon@googlemail.com (label:inbox OR label:updates)'
+query = 'is:unread newer_than:8h (label:inbox OR label:updates)'
 
 # Fetch matching emails
 messages = client.fetch_matching_messages(query: query)
