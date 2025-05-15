@@ -26,10 +26,6 @@ end
 client = GmailClient.new(credentials_path: gmail_credentials_path, gmail_address: gmail_address)
 gmail_service = client.instance_variable_get(:@service)
 
-# Lookup existing "SMS Sent" label
-sms_sent_label = gmail_service.list_user_labels('me').labels.find { |l| l.name == 'SMS Sent' }
-sms_sent_label_id = sms_sent_label&.id || raise("Label 'SMS Sent' not found in Gmail. Please create it manually.")
-
 # Gmail search query (limit to past 8 hours)
 #query = 'is:unread newer_than:8h -from:mailer-daemon@googlemail.com (label:inbox OR label:updates)'
 query = 'is:unread newer_than:8h (label:inbox OR label:updates)'
@@ -66,10 +62,9 @@ messages.each do |msg|
 
     puts "[#{timestamp}] SMS sent: HTTP #{response.code}"
 
-    # ✅ Mark the message as read and label it "SMS Sent"
+    # ✅ Mark the message as read (remove 'UNREAD')
     modify_request = Google::Apis::GmailV1::ModifyMessageRequest.new(
-      remove_label_ids: ['UNREAD'],
-      add_label_ids: [sms_sent_label_id, 'STARRED']
+      remove_label_ids: ['UNREAD']
     )
     gmail_service.modify_message('me', msg[:id], modify_request)
 
