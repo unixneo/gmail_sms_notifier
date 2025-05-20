@@ -55,7 +55,8 @@ messages.each do |msg|
       "https://api.openphone.com/v1/messages",
       headers: {
         "Authorization" => api_key,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "User-Agent" => "LoadAlert/1.0 (gzip) +https://www.unix.com"
       },
       body: payload.to_json
     )
