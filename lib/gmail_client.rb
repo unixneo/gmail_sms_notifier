@@ -3,7 +3,7 @@ require 'googleauth'
 
 class GmailClient
   APPLICATION_NAME = 'Gmail SMS Notifier'
-  SCOPE = Google::Apis::GmailV1::AUTH_GMAIL_MODIFY
+  SCOPE = Google::Apis::GmailV1::AUTH_GMAIL_READONLY
 
   def initialize(credentials_path:, gmail_address:)
     authorizer = Google::Auth::ServiceAccountCredentials.make_creds(
